@@ -20,6 +20,7 @@ classDiagram
         +list~FoodItem~ items
         +add_item(item: FoodItem) None
         +filter_by_category(category: str) list~FoodItem~
+        +sort_by_popularity() list~FoodItem~
     }
 
     class Order {
@@ -40,5 +41,7 @@ classDiagram
 - **`category` is a plain `str`**, so `filter_by_category()` compares strings (e.g. `"Drinks"`, `"Desserts"`).
 - **The order total is computed when you ask for it**: `compute_total()` adds up the item prices each time it's called, and no `total` field is stored.
 - **Verification rule**: `is_verified()` returns `True` when `purchase_history` has at least one order.
+- **Popularity rating** uses a 0.0–5.0 scale. `sort_by_popularity()` returns a new list with the highest rating first and leaves the menu's own order unchanged.
+- **Category matching** in `filter_by_category()` is exact (`"Drinks"` does not match `"drinks"`).
 - **An order can start empty**: `Order` holds `0..*` items, which are added with `add_item()`. `compute_total()` returns `0.0` for an empty order.
 - **Aggregation (`o--`)**: `Menu` and `Order` both refer to `FoodItem` objects without owning them. The same item can be on the menu and in many orders.

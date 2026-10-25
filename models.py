@@ -1,11 +1,12 @@
 # ByteBites models
 #
 # Customer  - A campus user with a name and a purchase history (list of past
-#             Orders). A customer is verified once they have at least one order.
+#             Orders). A customer is verified once they have at least one
+#             order.
 # FoodItem  - A single item for sale, with a name, price, category (plain
 #             string, e.g. "Drinks"), and popularity rating.
 # Menu      - The full collection of FoodItems; supports adding items and
-#             filtering them by category.
+#             filtering them by category or sorting them by popularity.
 # Order     - One transaction grouping the FoodItems a customer picked; starts
 #             empty and computes its total cost on demand (not stored).
 
@@ -13,8 +14,10 @@
 class FoodItem:
     """A single item for sale on the ByteBites menu."""
 
-    def __init__(self, name: str, price: float, category: str, popularity_rating: float) -> None:
-        """Create a food item with its name, price, category, and popularity rating (0.0-5.0)."""
+    def __init__(
+        self, name: str, price: float, category: str, popularity_rating: float
+    ) -> None:
+        """Create a food item; popularity_rating is on a 0.0-5.0 scale."""
         self.name = name
         self.price = price
         self.category = category
@@ -30,11 +33,21 @@ class Menu:
 
     def add_item(self, item: FoodItem) -> None:
         """Add a food item to the menu."""
-        pass
+        self.items.append(item)
 
     def filter_by_category(self, category: str) -> list[FoodItem]:
-        """Return the menu items whose category exactly matches the given string."""
-        pass
+        """Return the menu items whose category exactly matches `category`."""
+        matches: list[FoodItem] = []
+        for item in self.items:
+            if item.category == category:
+                matches.append(item)
+        return matches
+
+    def sort_by_popularity(self) -> list[FoodItem]:
+        """Return a new list of menu items, highest popularity rating first."""
+        return sorted(
+            self.items, key=lambda item: item.popularity_rating, reverse=True
+        )
 
 
 class Order:
@@ -46,11 +59,14 @@ class Order:
 
     def add_item(self, item: FoodItem) -> None:
         """Add a food item to the order."""
-        pass
+        self.items.append(item)
 
     def compute_total(self) -> float:
-        """Return the sum of item prices, computed each call; 0.0 if the order is empty."""
-        pass
+        """Return the sum of item prices (0.0 if empty), computed each call."""
+        total = 0.0
+        for item in self.items:
+            total += item.price
+        return total
 
 
 class Customer:
@@ -63,8 +79,8 @@ class Customer:
 
     def add_purchase(self, order: Order) -> None:
         """Record a completed order in the customer's purchase history."""
-        pass
+        self.purchase_history.append(order)
 
     def is_verified(self) -> bool:
         """Return True if the customer has at least one past order."""
-        pass
+        return len(self.purchase_history) > 0
